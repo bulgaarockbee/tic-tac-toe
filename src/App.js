@@ -16,9 +16,11 @@ function Game() {
     setCurrentMove(nextMove);
   }
 
-  const moves = history.map((squares, move) => {
+  const moves = history.map((_squares, move) => {
     let description;
-    if (move > 0) {
+    if (move === currentMove) {
+      description = "You are at move #" + move;
+    } else if (move > 0) {
       description = "Go to move #" + move;
     } else {
       description = "Go to game start";
@@ -64,25 +66,28 @@ function Board({ xIsNext, squares, onPlay }) {
   } else {
     status = "Next player is:" + (xIsNext ? "X" : "O");
   }
+  const arrangedSquares = Array.from({ length: 3 }, (_, index) =>
+    squares.slice(index * 3, index * 3 + 3)
+  );
 
   return (
     <>
       <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div>
+      {arrangedSquares.map((oneLineSquares, lineIndex) => {
+        return (
+          <div className="board-row" key={lineIndex}>
+            {oneLineSquares.map((square, squareIndex) => {
+              return (
+                <Square
+                  key={lineIndex * 3 + squareIndex}
+                  value={square}
+                  onSquareClick={() => handleClick(lineIndex * 3 + squareIndex)}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
     </>
   );
 }
